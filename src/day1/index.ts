@@ -11,11 +11,10 @@ const expenses: number[] = entries
     return thatNum[0]
   }
 
-const multiplyCorrectAddends = (data: number[]): number => {
+const multiplyTwoAddends = (data: number[]): number => {
   let result: number = 0;
   for (let i = 0; i < data.length; i++) {
     const secondNum = checker(data.slice(i));
-    
     if (secondNum) {
       const firstNum: number = data[i];
       result = firstNum * secondNum;
@@ -25,4 +24,20 @@ const multiplyCorrectAddends = (data: number[]): number => {
   return result;
 };
 
-console.log(multiplyCorrectAddends(expenses));
+const multiplyThreeAddends = (data: number[]): number => {
+  let result: number = 0;
+  for (let i = 0; i < data.length; i++) {
+    for (let j = 0; j < data.length; j++) {
+      for (let k = 0; k < data.length; k++) {
+        if (data[i] + data[j] + data[k] === 2020) {
+          result = data[i] * data[j] * data[k];
+          break;
+        }
+      }
+    }
+  }
+  return result;
+};
+
+console.log(multiplyTwoAddends(expenses));
+console.log(multiplyThreeAddends(expenses));
