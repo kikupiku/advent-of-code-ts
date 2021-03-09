@@ -13,14 +13,10 @@ const expenses: number[] = entries
 
 const multiplyTwoAddends = (data: number[]): number => {
   let result: number = 0;
-  for (let i = 0; i < data.length; i++) {
+  data.forEach((_, i) => {
     const secondNum = checker(data.slice(i));
-    if (secondNum) {
-      const firstNum: number = data[i];
-      result = firstNum * secondNum;
-      break;
-    }
-  }
+    result = secondNum ? data[i] * secondNum : result;
+  });
   return result;
 };
 
