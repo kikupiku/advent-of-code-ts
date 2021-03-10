@@ -10,11 +10,13 @@ type PasswordEntry = {
 const puzzleInput = fs
   .readFileSync(`${__dirname}/input.txt`)
   .toString()
+  .trim()
   .replace(/:/g, '')
   .replace(/-/g, ' ')
   .split('\n')
   .map((element) => element.split(' '));
-const passwordDB = puzzleInput.map((element) => {
+  
+const passwordDB: PasswordEntry[] = puzzleInput.map((element) => {
   return {
     min: parseInt(element[0]),
     max: parseInt(element[1]),
@@ -24,24 +26,13 @@ const passwordDB = puzzleInput.map((element) => {
 });
 
 const isValidPassword = (entry: PasswordEntry): boolean => {
-  if (entry.password !== null) {
-    const regex = new RegExp(`ReGeX${entry.letter}ReGeX`);
-    const characterCount = entry[password].match(regex.global || []).length;
-    let isValid =
-      characterCount >= entry.max && characterCount <= entry.min ? true : false;
-    return isValid;
-  } else {
-    return false;
-  }
+  const characterCount = entry.password
+    .split('')
+    .filter((letter) => letter === entry.letter).length;
+  return characterCount <= entry.max && characterCount >= entry.min;
 };
 
-const howManyValidPasswords = (database: PasswordEntry[]): number => {
-    let validPasswordCount = 0;
-  database.forEach(entry => {
-    validPasswordCount = isValidPassword(entry) ? validPasswordCount++ : validPasswordCount;
-    return validPasswordCount;
-  })
-  return validPasswordCount;
-};
+const howManyValidPasswords = (database: PasswordEntry[]): number =>
+  database.filter((entry) => isValidPassword(entry)).length;
 
 console.log(howManyValidPasswords(passwordDB));
