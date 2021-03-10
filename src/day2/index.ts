@@ -1,5 +1,12 @@
 import fs from 'fs';
 
+type PasswordEntry = {
+  min: number;
+  max: number;
+  letter: string;
+  password: string;
+};
+
 const puzzleInput = fs
   .readFileSync(`${__dirname}/input.txt`)
   .toString()
@@ -16,17 +23,25 @@ const passwordDB = puzzleInput.map((element) => {
   };
 });
 
-const hasMinimum = (database: object): boolean => {
-
-  return true;
+const isValidPassword = (entry: PasswordEntry): boolean => {
+  if (entry.password !== null) {
+    const regex = new RegExp(`ReGeX${entry.letter}ReGeX`);
+    const characterCount = entry[password].match(regex.global || []).length;
+    let isValid =
+      characterCount >= entry.max && characterCount <= entry.min ? true : false;
+    return isValid;
+  } else {
+    return false;
+  }
 };
 
-const isLessThanMaximum = (database: object): boolean => {
-  return true;
+const howManyValidPasswords = (database: PasswordEntry[]): number => {
+    let validPasswordCount = 0;
+  database.forEach(entry => {
+    validPasswordCount = isValidPassword(entry) ? validPasswordCount++ : validPasswordCount;
+    return validPasswordCount;
+  })
+  return validPasswordCount;
 };
 
-const howManyValidPasswords = (min: () => {}, max: () => {}): number => {
-  return 0;
-}
-
-console.log(passwordDB);
+console.log(howManyValidPasswords(passwordDB));
