@@ -6,29 +6,39 @@ const roadmap = fs
   .trim()
   .split('\n');
 
-const howManyTrees = (roadmap: string[]): number => {
+const visibleWidth = roadmap[0].length;
 
-  const visibleWidth = roadmap[0].length;
+const movePosition = (position: number, right: number): number => {
+  const difference = visibleWidth - position;
+  return position + right < visibleWidth
+    ? position + right
+    : right - difference;
+};
+
+const howManyTrees = (
+  roadmap: string[],
+  right: number,
+  down: number
+): number => {
   let trees: number = 0;
   let position: number = 0;
   roadmap.forEach((level, i) => {
-    trees = level[position] === '#' ? trees + 1 : trees;
-    console.log(i + 1 + ' ' + position + ' ' + trees);
-    switch (position) {
-      case visibleWidth - 1: //30
-        position = 2;
-        break;
-      case visibleWidth - 2: //29
-        position = 1;
-        break;
-      case visibleWidth - 3: //29
-        position = 0;
-        break;
-      default:
-        position += 3;
+    if (down === 1 || (down === 2 && i % 2 === 0)) {
+      trees = level[position] === '#' ? trees + 1 : trees;
+      position = movePosition(position, right);
     }
   });
   return trees;
 };
 
-console.log(howManyTrees(roadmap));
+const allTreesMultiplied = (): number => {
+  return (
+    howManyTrees(roadmap, 1, 1) *
+    howManyTrees(roadmap, 3, 1) *
+    howManyTrees(roadmap, 5, 1) *
+    howManyTrees(roadmap, 7, 1) *
+    howManyTrees(roadmap, 1, 2)
+  );
+}
+
+console.log(allTreesMultiplied());
