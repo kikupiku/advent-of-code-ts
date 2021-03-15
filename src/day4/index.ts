@@ -1,16 +1,18 @@
 import fs from 'fs';
 
 interface PassportCredentials {
-  byr?: string;
+  byr?: number;
   cid?: string;
   ecl?: string;
-  eyr?: string;
+  eyr?: number;
   hcl?: string;
-  hgt?: string;
-  iyr?: string;
+  hgt?: number;
+  iyr?: number;
   pid?: string;
   isValid?: boolean;
 };
+
+const numericCredentials = ['byr', 'eyr', 'hgt', 'iyr', 'pid'];
 
 const passportDB: {}[] = fs
   .readFileSync(`${__dirname}/input.txt`)
@@ -24,7 +26,8 @@ const passportDB: {}[] = fs
       .map((credential) => credential.split(':'));
     return credentials;
   })
-  .map((passport) => Object.fromEntries(passport));
+  .map((passport) =>
+    Object.fromEntries(passport));
 
 const checkPassports = (database: {}[]): {}[] => {
   database.map((passport) => {
@@ -49,4 +52,33 @@ const howManyValidPassports = (database: PassportCredentials[]): number => {
   return checkPassports(database).filter((passport: any) => passport.isValid).length;  //how to solve it without "any"?
 };
 
-console.log(howManyValidPassports(passportDB));
+const additionalChecks = (database: PassportCredentials[]) => {
+  let isValid = true;
+  database.forEach(passport => {
+
+    for (let key in passport) {
+      // let value = parseInt(`${passport[key]}`);
+      switch (key) {
+        case 'byr':
+          isValid = (value >= 1920 && value <= 2002);
+          break;
+        case 'iyr':
+          isValid = (value >= 2010 && value <= 2020);
+          break;
+        case 'eyr':
+          isValid = (value >= 2020 && value <= 2030);
+          break;
+        case 'hgt':
+          // isValid = 
+          break;
+        case 'hcl':
+          if (typeof value === 'string' && value[0] !== '#') {
+            isValid = false;
+            break;
+          } 
+      }
+    }
+  })
+}
+
+console.log(passportDB);
