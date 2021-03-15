@@ -11,14 +11,25 @@ type ValidPassportCredentials = {
   pid: string,
 }
 
-const passportDB: string[][][] = fs
+const passportDB: {}[] = fs
   .readFileSync(`${__dirname}/input.txt`)
   .toString()
   .trim()
   .split('\n\n')
   .map((passport) => {
-    const credentials = passport.replace(/\n/g, ' ').split(' ').map(credential => credential.split(':'));
-    return credentials;;
-  });
+    const credentials = passport
+      .replace(/\n/g, ' ')
+      .split(' ')
+      .map((credential) => credential.split(':'));
+    return credentials;
+  })
+  .map((passport) => Object.fromEntries(passport));
 
-console.log(passportDB);
+// const validPassports: number = passportDB.filter(passport => {
+//   let isValid: boolean = true;
+//   // for (key in passport) {
+//   }
+
+// });
+
+console.log(validPassports);
