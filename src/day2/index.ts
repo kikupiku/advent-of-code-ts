@@ -1,13 +1,13 @@
 import fs from 'fs';
 
-type FirstValidationEntry = {
+interface FirstValidationEntry {
   min: number;
   max: number;
   character: string;
   password: string;
 }
 
-type SecondValidationEntry = {
+interface SecondValidationEntry {
   positionOne: number;
   positionTwo: number;
   character: string;
@@ -44,8 +44,6 @@ const getPasswordDB = (input: string[][], validationType: number): PasswordEntry
   });
 };
 
-// ^ function to direct to first union type or second
-
 const isValidPasswordFirstPolicy = (input: FirstValidationEntry) => {
   const characterCount = input.password
     .split('')
@@ -65,15 +63,15 @@ const isValidPasswordSecondPolicy = (input: SecondValidationEntry) => {
 
 const howManyValidPasswords = (policy: number): number => {
   const entries = getPasswordDB(puzzleInput, policy);
-  const checkEntries =  entries.filter((entry: PasswordEntry) => {
+  const correctEntries =  entries.filter((entry: PasswordEntry) => {
     switch (policy) {
       case 1:
-        isValidPasswordFirstPolicy(entry);
+        return isValidPasswordFirstPolicy(entry as FirstValidationEntry);
       default:      // case 2
-        isValidPasswordSecondPolicy(entry);
+        return isValidPasswordSecondPolicy(entry as SecondValidationEntry);
     }
   });
-  return checkEntries.length;
+  return correctEntries.length;
 }
 
 console.log(howManyValidPasswords(1));
