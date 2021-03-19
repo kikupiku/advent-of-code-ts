@@ -1,47 +1,80 @@
 import fs from 'fs';
 
-type PasswordEntry = {
+type FirstValidationEntry = {
   min: number;
   max: number;
-  letter: string;
+  character: string;
   password: string;
-};
+}
 
-type PolicyCheck = (entry: PasswordEntry) => boolean;
+type SecondValidationEntry = {
+  positionOne: number;
+  positionTwo: number;
+  character: string;
+  password: string;
+}
+
+type PasswordEntry = FirstValidationEntry | SecondValidationEntry;
 
 const puzzleInput = fs
   .readFileSync(`${__dirname}/input.txt`)
   .toString()
   .trim()
-  .replace(/:/g, '')
-  .replace(/-/g, ' ')
   .split('\n')
-  .map((element) => element.split(' '));
+  .map((entry) => /(\d+)-(\d+) (.): (.*)/.exec(entry)!.slice(1, 5));
 
-const passwordDB: PasswordEntry[] = puzzleInput.map((element) => {
-  return {
-    min: parseInt(element[0]),
-    max: parseInt(element[1]),
-    letter: element[2],
-    password: element[3],
-  };
-});
-
-const isValidPasswordFirstPolicy: PolicyCheck = (entry) => {
-  const characterCount = entry.password
-    .split('')
-    .filter((letter) => letter === entry.letter).length;
-  return characterCount <= entry.max && characterCount >= entry.min;
+const getPasswordDB = (input: string[][], validationType: number): PasswordEntry[] => {
+  return input.map((element) => {
+    switch (validationType) {
+      case 1:
+        return {
+          min: parseInt(element[0]),
+          max: parseInt(element[1]),
+          character: element[2],
+          password: element[3],
+        };
+      default:        // case 2
+        return {
+          positionOne: parseInt(element[0]),
+          positionTwo: parseInt(element[1]),
+          character: element[2],
+          password: element[3],
+        };
+    }
+  });
 };
 
-const isValidPasswordSecondPolicy: PolicyCheck = entry => {
-  const occurrence1: boolean = entry.password[entry.min - 1] === entry.letter;
-  const occurrence2: boolean = entry.password[entry.max - 1] === entry.letter;
+// ^ function to direct to first union type or second
+
+const isValidPasswordFirstPolicy = (input: FirstValidationEntry) => {
+  const characterCount = input.password
+    .split('')
+    .filter((letter) => letter === input.character).length;
+  return (
+    characterCount <= input.max && characterCount >= input.min
+  );
+};
+
+const isValidPasswordSecondPolicy = (input: SecondValidationEntry) => {
+  const occurrence1: boolean =
+    input.password[input.positionOne - 1] === input.character;
+  const occurrence2: boolean =
+    input.password[input.positionTwo - 1] === input.character;
   return [occurrence1, occurrence2].filter((occ) => occ).length === 1;
 };
 
-const howManyValidPasswords = (database: PasswordEntry[], entryCheck: PolicyCheck): number =>
-  database.filter((entry) => entryCheck(entry)).length;
+const howManyValidPasswords = (policy: number): number => {
+  const entries = getPasswordDB(puzzleInput, policy);
+  const checkEntries =  entries.filter((entry: PasswordEntry) => {
+    switch (policy) {
+      case 1:
+        isValidPasswordFirstPolicy(entry);
+      default:      // case 2
+        isValidPasswordSecondPolicy(entry);
+    }
+  });
+  return checkEntries.length;
+}
 
-console.log(howManyValidPasswords(passwordDB, isValidPasswordFirstPolicy));
-console.log(howManyValidPasswords(passwordDB, isValidPasswordSecondPolicy));
+console.log(howManyValidPasswords(1));
+console.log(howManyValidPasswords(2));
